@@ -6,6 +6,7 @@ interface PieData {
   name: string;
   value: number;
   color: string;
+  [key: string]: any;
 }
 
 interface MatchAnalyticsChartProps {
