@@ -15,6 +15,34 @@ const REQUIRED_SERVER_ID = process.env.DISCORD_SERVER_ID;
 const ADMIN_ROLE_IDS = process.env.ADMIN_ROLE_IDS?.split(",") || [];
 
 /**
+ * Retry an async operation with exponential backoff
+ */
+async function retryAsync<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  delayMs: number = 1000
+): Promise<T> {
+  let lastError: Error | undefined;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
+      
+      // Don't wait after the last attempt
+      if (attempt < maxRetries - 1) {
+        // Exponential backoff: 1s, 2s, 4s, etc.
+        const waitTime = delayMs * Math.pow(2, attempt);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+    }
+  }
+
+  throw lastError || new Error("Retry failed");
+}
+
+/**
  * Check if a user is authorized (admin/mod in the Discord server)
  */
 async function checkUserAuthorization(
@@ -40,10 +68,9 @@ async function checkUserAuthorization(
     );
 
     if (!response.ok) {
-      console.error(
+      throw new Error(
         `Failed to fetch member data: ${response.status} ${response.statusText}`
       );
-      return false;
     }
 
     const member = await response.json();
@@ -54,10 +81,14 @@ async function checkUserAuthorization(
       ADMIN_ROLE_IDS.includes(role)
     );
 
-    return isAuthorized;
+    if (!isAuthorized) {
+      throw new Error("User does not have required roles");
+    }
+
+    return true;
   } catch (error) {
     console.error("Error checking user authorization:", error);
-    return false;
+    throw error;
   }
 }
 
@@ -80,12 +111,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return false;
       }
 
-      const isAuthorized = await checkUserAuthorization(
-        account.providerAccountId,
-        account.access_token
-      );
-
-      return isAuthorized;
+      try {
+        // Retry authorization check to handle Discord API timing issues
+        // where OAuth permissions take a moment to propagate
+        const isAuthorized = await retryAsync(
+          () => checkUserAuthorization(
+            account.providerAccountId!,
+            account.access_token!
+          ),
+          3, // max retries
+          1000 // initial delay: 1s, then 2s, then 4s
+        );
+        
+        return isAuthorized;
+      } catch (error) {
+        console.error("Authorization check failed after retries:", error);
+        return false;
+      }
     },
     async jwt({ token, account, profile }) {
       if (account && profile) {
