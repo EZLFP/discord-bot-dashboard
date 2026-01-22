@@ -13,8 +13,13 @@ interface LiveQueueStatusProps {
 
 export function LiveQueueStatus({ initialData }: LiveQueueStatusProps) {
   const [queueState, setQueueState] = useState<CurrentQueueState[]>(initialData);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Set initial timestamp only on client side to avoid hydration mismatch
+  useEffect(() => {
+    setLastUpdate(new Date());
+  }, []);
 
   useEffect(() => {
     const fetchQueue = async () => {
@@ -56,7 +61,7 @@ export function LiveQueueStatus({ initialData }: LiveQueueStatusProps) {
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <RefreshCw className={cn("h-3 w-3", isRefreshing && "animate-spin")} />
             <span>
-              Updated {lastUpdate.toLocaleTimeString()}
+              Updated {lastUpdate ? lastUpdate.toLocaleTimeString() : "..."}
             </span>
           </div>
         </div>
