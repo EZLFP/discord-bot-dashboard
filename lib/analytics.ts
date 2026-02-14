@@ -134,6 +134,60 @@ export async function getGuilds(): Promise<T.GuildsResponse> {
 }
 
 /**
+ * Fetch command log
+ * Cache: 60 seconds
+ */
+export async function getCommandLog(
+  days: number = 7,
+  limit: number = 100
+): Promise<T.CommandLogResponse> {
+  return fetchWithCache<T.CommandLogResponse>(
+    `${API_URL}/api/analytics/command-log?days=${days}&limit=${limit}`,
+    60
+  );
+}
+
+/**
+ * Fetch live queue players
+ * Cache: 60 seconds (server-side)
+ */
+export async function getQueuePlayers(): Promise<T.QueuePlayersResponse> {
+  return fetchWithCache<T.QueuePlayersResponse>(
+    `${API_URL}/api/analytics/queue-players`,
+    60
+  );
+}
+
+/**
+ * Fetch queue action log
+ * Cache: 60 seconds
+ */
+export async function getQueueLog(
+  days: number = 7,
+  limit: number = 100
+): Promise<T.QueueLogResponse> {
+  return fetchWithCache<T.QueueLogResponse>(
+    `${API_URL}/api/analytics/queue-log?days=${days}&limit=${limit}`,
+    60
+  );
+}
+
+/**
+ * Client-side fetch for live queue players (no cache)
+ */
+export async function fetchLiveQueuePlayers(): Promise<T.QueuePlayersResponse> {
+  const res = await fetch(`${API_URL}/api/analytics/queue-players`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch live queue players");
+  }
+
+  return res.json();
+}
+
+/**
  * Client-side fetch for polling (without caching)
  * Used in client components that need real-time data
  */

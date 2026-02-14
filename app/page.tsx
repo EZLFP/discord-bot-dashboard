@@ -9,7 +9,8 @@ import { CommandsTable } from "@/components/dashboard/commands-table";
 import { EventsFeed } from "@/components/dashboard/events-feed";
 import { UserAnalytics } from "@/components/dashboard/user-analytics";
 import { GuildsTable } from "@/components/dashboard/guilds-table";
-import { getQueues, getCommands, getGuilds } from "@/lib/analytics";
+import { CommandLog } from "@/components/dashboard/command-log";
+import { getQueues, getCommands, getGuilds, getCommandLog } from "@/lib/analytics";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -34,10 +35,11 @@ export default async function DashboardPage() {
   }
 
   // Fetch data for client components
-  const [queuesData, commandsData, guildsData] = await Promise.all([
+  const [queuesData, commandsData, guildsData, commandLogData] = await Promise.all([
     getQueues(1),
     getCommands(30, 20),
     getGuilds(),
+    getCommandLog(7, 100),
   ]);
 
   return (
@@ -81,6 +83,17 @@ export default async function DashboardPage() {
           <CommandsTable
             commands={commandsData.commands}
             period={commandsData.period}
+          />
+        </section>
+
+        {/* Command Log */}
+        <section>
+          <h2 className="text-2xl font-bold mb-4">Command Log</h2>
+          <CommandLog
+            entries={commandLogData.entries}
+            total={commandLogData.total}
+            period={commandLogData.period}
+            guilds={guildsData.guilds}
           />
         </section>
 

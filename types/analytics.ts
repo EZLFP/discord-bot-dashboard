@@ -117,6 +117,56 @@ export interface DailyMetricsResponse {
   period: string;
 }
 
+// Command Log types
+export interface CommandLogEntry {
+  id: string;
+  userId: string;
+  username: string;
+  commandName: string;
+  success: boolean;
+  executionTimeMs: number | null;
+  guildId: string | null;
+  createdAt: string;
+}
+
+export interface CommandLogResponse {
+  entries: CommandLogEntry[];
+  total: number;
+  period: string;
+}
+
+// Queue Player types
+export interface QueuePlayer {
+  game: "LOL" | "VAL";
+  mode: string;
+  userId: string;
+  username: string;
+  rank: string;
+  joinedAt: string;
+}
+
+export interface QueuePlayersResponse {
+  players: QueuePlayer[];
+}
+
+// Queue Log types
+export interface QueueAction {
+  id: string;
+  userId: string;
+  username: string;
+  game: "LOL" | "VAL";
+  mode: string;
+  status: string;
+  joinedAt: string;
+  matchedAt: string | null;
+  updatedAt: string;
+}
+
+export interface QueueLogResponse {
+  actions: QueueAction[];
+  period: string;
+}
+
 export interface BotGuild {
   id: string;
   name: string;

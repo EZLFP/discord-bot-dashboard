@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NavLinks } from "@/components/nav-links";
 import { Activity, LogOut } from "lucide-react";
 
 export async function Navbar() {
@@ -14,6 +15,7 @@ export async function Navbar() {
             <h1 className="text-lg font-bold">EZLFP Analytics</h1>
             <p className="text-xs text-muted-foreground">Discord Bot Dashboard</p>
           </div>
+          <NavLinks />
         </div>
 
         <div className="flex items-center gap-4">
