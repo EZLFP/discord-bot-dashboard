@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/", label: "Overview" },
   { href: "/queue", label: "Queue" },
+  { href: "/matching-quality", label: "Matching Quality" },
 ];
 
 export function NavLinks() {

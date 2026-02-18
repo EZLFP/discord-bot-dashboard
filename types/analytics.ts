@@ -167,6 +167,39 @@ export interface QueueLogResponse {
   period: string;
 }
 
+export interface MatchingQualityResponse {
+  acceptanceRate: number;
+  positiveFeedbackRatio: number;
+  reQueueRate: number;
+  feedbackSubmissionRate: number;
+  timeToMatch: {
+    avgMinutes: number;
+    medianMinutes: number;
+    p95Minutes: number;
+  };
+  repeatMatching: {
+    repeatPairCount: number;
+    totalRepeatMatches: number;
+  };
+  lfRequestAcceptanceRate: number;
+  counts: {
+    totalProposals: number;
+    matchedProposals: number;
+    declinedProposals: number;
+    timedOutProposals: number;
+    positiveFeedback: number;
+    negativeFeedback: number;
+    totalFeedback: number;
+    requeues: number;
+    leaves: number;
+    lfAccepted: number;
+    lfDeclined: number;
+    lfExpired: number;
+    lfTotal: number;
+  };
+  period: string;
+}
+
 export interface BotGuild {
   id: string;
   name: string;

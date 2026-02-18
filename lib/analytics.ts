@@ -173,6 +173,19 @@ export async function getQueueLog(
 }
 
 /**
+ * Fetch matching quality metrics
+ * Cache: 120 seconds
+ */
+export async function getMatchingQuality(
+  days: number = 30
+): Promise<T.MatchingQualityResponse> {
+  return fetchWithCache<T.MatchingQualityResponse>(
+    `${API_URL}/api/analytics/matching-quality?days=${days}`,
+    120
+  );
+}
+
+/**
  * Client-side fetch for live queue players (no cache)
  */
 export async function fetchLiveQueuePlayers(): Promise<T.QueuePlayersResponse> {
