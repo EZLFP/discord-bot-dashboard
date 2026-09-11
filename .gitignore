@@ -32,6 +32,3 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
-temp_auto_push.bat
-temp_interactive_push.bat
-branch_structure.json
